@@ -16,9 +16,10 @@ ota:
   platform: esphome
   password: ""
 
+# NOTE: No Wi‑Fi creds here on purpose (safer public build).
+# Device will boot a hotspot (captive portal). You can provision Wi‑Fi later
+# from the ESPHome dashboard (“Adopt”) or by joining its AP.
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
   ap:
 
 text_sensor:
