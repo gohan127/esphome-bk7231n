@@ -1,7 +1,7 @@
-name: Build ESPHome firmware (with Wi-Fi secrets)
+name: Build ESPHome firmware (with Wi‑Fi secrets)
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -10,11 +10,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Compile with ESPHome Docker
+      - name: Build with ESPHome Docker
         run: |
           docker run --rm \
-            -v "${{ github.workspace }}:/config" \
-            -w /config \
+            -v "${{ github.workspace }}":/config \
             ghcr.io/esphome/esphome:latest \
             compile upk2esphome-bk7231n.yaml \
             -s wifi_ssid="${{ secrets.WIFI_SSID }}" \
