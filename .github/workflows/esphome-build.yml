@@ -2,46 +2,28 @@ name: Build ESPHome firmware (with Wi-Fi secrets)
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "upk2esphome-bk7231n.yaml"
-      - ".github/workflows/esphome-build-with-secrets.yml"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install ESPHome
+      - name: Compile with ESPHome Docker
         run: |
-          python -m pip install --upgrade pip
-          pip install "esphome>=2024.6.0"
-
-      - name: Create secrets.yaml (from GitHub Secrets)
-        run: |
-          mkdir -p .esphome
-          cat > .esphome/secrets.yaml <<'EOF'
-          wifi_ssid: "${{ secrets.WIFI_SSID }}"
-          wifi_password: "${{ secrets.WIFI_PASSWORD }}"
-          EOF
-
-      - name: Swap YAML to use secrets
-        run: |
-          sed -i 's/^wifi:.*/wifi:\n  ssid: !secret wifi_ssid\n  password: !secret wifi_password\n  ap:/g' upk2esphome-bk7231n.yaml
-
-      - name: Compile firmware
-        run: |
-          esphome compile upk2esphome-bk7231n.yaml
+          docker run --rm \
+            -v "${{ github.workspace }}:/config" \
+            -w /config \
+            ghcr.io/esphome/esphome:latest \
+            compile upk2esphome-bk7231n.yaml \
+            -s wifi_ssid="${{ secrets.WIFI_SSID }}" \
+            -s wifi_password="${{ secrets.WIFI_PASSWORD }}"
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-with-wifi
+          name: firmware
           path: |
-            ./.esphome/build/upk2esphome-bk7231n/.pioenvs/upk2esphome-bk7231n/firmware.bin
-            ./.esphome/build/upk2esphome-bk7231n/.pioenvs/upk2esphome-bk7231n/firmware-factory.bin
+            .esphome/build/*/*.bin
+            .esphome/build/*/*.uf2
