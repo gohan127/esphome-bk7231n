@@ -1,6 +1,6 @@
 substitutions:
-  WIFI_SSID: !secret WIFI_SSID
-  WIFI_PASSWORD: !secret WIFI_PASSWORD
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
 
 esphome:
   name: upk2esphome-bk7231n
@@ -21,8 +21,8 @@ ota:
   password: ""
 
 wifi:
-  ssid: "${WIFI_SSID}"
-  password: "${WIFI_PASSWORD}"
+  ssid: "${wifi_ssid}"
+  password: "${wifi_password}"
   ap:
 
 text_sensor:
