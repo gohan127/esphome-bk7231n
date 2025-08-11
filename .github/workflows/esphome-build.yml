@@ -15,9 +15,9 @@ jobs:
           docker run --rm \
             -v "${{ github.workspace }}":/config \
             ghcr.io/esphome/esphome:latest \
-            compile upk2esphome-bk7231n.yaml \
             -s wifi_ssid="${{ secrets.WIFI_SSID }}" \
             -s wifi_password="${{ secrets.WIFI_PASSWORD }}"
+            compile upk2esphome-bk7231n.yaml \
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
