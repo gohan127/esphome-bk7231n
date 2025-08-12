@@ -1,4 +1,4 @@
-name: Build ESPHome firmware (fixed Wi‑Fi)
+name: Build ESPHome firmware (fixed Wi-Fi)
 
 on:
   workflow_dispatch: {}
@@ -15,15 +15,15 @@ jobs:
           docker run --rm \
             -v "${{ github.workspace }}":/config \
             ghcr.io/esphome/esphome:latest \
-            compile upk2esphome-bk7231n.yaml      
-- name: List build outputs (debug)
-  run: ls -R .esphome/build || true
+            compile upk2esphome-bk7231n.yaml
 
-- name: Upload firmware artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: firmware
-    path: |
-      .esphome/build/**/.pioenvs/**/firmware*.bin
-      .esphome/build/**/.pioenvs/**/firmware*.uf2
+      - name: List build outputs (debug)
+        run: ls -R .esphome/build || true
 
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            .esphome/build/**/.pioenvs/**/firmware*.bin
+            .esphome/build/**/.pioenvs/**/firmware*.uf2
