@@ -1,7 +1,7 @@
-name: Build ESPHome firmware (fixed Wi-Fi)
+name: Build ESPHome firmware
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
   build:
@@ -10,15 +10,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with ESPHome Docker
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}":/config \
-            ghcr.io/esphome/esphome:latest \
-            compile upk2esphome-bk7231n.yaml
+      - name: Build firmware with ESPHome Docker
+        run: >
+          docker run --rm
+          -v "${{ github.workspace }}":/config
+          ghcr.io/esphome/esphome:latest
+          compile upk2esphome-bk7231n.yaml
 
       - name: List build outputs (debug)
-        run: ls -R .esphome/build || true
+        run: |
+          echo "Tree under .esphome:"
+          ls -R .esphome || true
+          echo "Found firmware files:"
+          find . -name "firmware*.bin" -o -name "firmware*.uf2" || true
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
@@ -27,3 +31,5 @@ jobs:
           path: |
             .esphome/build/**/.pioenvs/**/firmware*.bin
             .esphome/build/**/.pioenvs/**/firmware*.uf2
+            .esphome/build/**/**/firmware*.bin
+            .esphome/build/**/**/firmware*.uf2
