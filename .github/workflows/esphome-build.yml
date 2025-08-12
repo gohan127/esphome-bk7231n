@@ -10,14 +10,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with ESPHome Docker
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install ESPHome
+        run: pip install --upgrade esphome
+
+      - name: Replace secrets in YAML
+        env:
+          WIFI_SSID: ${{ secrets.WIFI_SSID }}
+          WIFI_PASSWORD: ${{ secrets.WIFI_PASSWORD }}
         run: |
-          docker run --rm \
-            -v "${{ github.workspace }}":/config \
-            ghcr.io/esphome/esphome:latest \
-            -s wifi_ssid="${{ secrets.WIFI_SSID }}" \
-            -s wifi_password="${{ secrets.WIFI_PASSWORD }}"
-            compile upk2esphome-bk7231n.yaml \
+          # Safely escape / and & so sed won't choke on special characters
+          SSID_ESCAPED=$(printf '%s' "$WIFI_SSID" | sed -e 's/[\/&]/\\&/g')
+          PASS_ESCAPED=$(printf '%s' "$WIFI_PASSWORD" | sed -e 's/[\/&]/\\&/g')
+
+          sed -i "s|WIFI_SSID_PLACEHOLDER|$SSID_ESCAPED|g" upk2esphome-bk7231n.yaml
+          sed -i "s|WIFI_PASSWORD_PLACEHOLDER|$PASS_ESCAPED|g" upk2esphome-bk7231n.yaml
+
+      - name: Compile firmware
+        run: esphome compile upk2esphome-bk7231n.yaml
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
