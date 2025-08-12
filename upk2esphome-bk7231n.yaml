@@ -21,9 +21,10 @@ ota:
   password: ""
 
 wifi:
-  ssid: "${wifi_ssid}"
-  password: "${wifi_password}"
+  ssid: "WIFI_SSID_PLACEHOLDER"
+  password: "WIFI_PASSWORD_PLACEHOLDER"
   ap:
+
 
 text_sensor:
   - platform: libretiny
