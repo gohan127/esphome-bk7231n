@@ -17,19 +17,27 @@ jobs:
           ghcr.io/esphome/esphome:latest
           compile upk2esphome-bk7231n.yaml
 
-      - name: List build outputs (debug)
+      - name: Collect firmware files
         run: |
+          set -euxo pipefail
+          mkdir -p dist
           echo "Tree under .esphome:"
           ls -R .esphome || true
-          echo "Found firmware files:"
-          find . -name "firmware*.bin" -o -name "firmware*.uf2" || true
+
+          # Find anything that looks like firmware output and copy to dist/
+          mapfile -t FILES < <(find .esphome -type f \( -name "firmware*.bin" -o -name "*.bin" -o -name "firmware*.uf2" -o -name "*.uf2" \))
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No firmware files found under .esphome. Failing…"
+            exit 1
+          fi
+          for f in "${FILES[@]}"; do
+            cp "$f" dist/
+          done
+          echo "Collected files:"
+          ls -l dist
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: |
-            .esphome/build/**/.pioenvs/**/firmware*.bin
-            .esphome/build/**/.pioenvs/**/firmware*.uf2
-            .esphome/build/**/**/firmware*.bin
-            .esphome/build/**/**/firmware*.uf2
+          path: dist/*
