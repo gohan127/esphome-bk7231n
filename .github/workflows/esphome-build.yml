@@ -15,8 +15,7 @@ jobs:
           docker run --rm \
             -v "${{ github.workspace }}":/config \
             ghcr.io/esphome/esphome:latest \
-            compile upk2esphome-bk7231n.yaml
-            
+            compile upk2esphome-bk7231n.yaml      
 - name: List build outputs (debug)
   run: ls -R .esphome/build || true
 
