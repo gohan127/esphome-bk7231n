@@ -6,10 +6,6 @@ bk72xx:
 
 logger:
 
-web_server:
-
-captive_portal:
-
 mdns:
 
 api:
