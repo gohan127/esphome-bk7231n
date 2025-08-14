@@ -10,8 +10,8 @@ ota:
   platform: esphome
   password: ""
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: ${{ secrets.wifi_ssid }} 
+  password: ${{ secrets.wifi_password }}
   ap:
 text_sensor:
   - platform: libretiny
